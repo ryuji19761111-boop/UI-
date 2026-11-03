@@ -1,0 +1,21 @@
+{
+  "name": "BlazeUI",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "BlazeUI": {
+        "$path": "src/BlazeUI.lua"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Demo": {
+          "$path": "examples/Demo.client.lua"
+        }
+      }
+    }
+  }
+}
