@@ -1,68 +1,66 @@
---[[
-	ONYX UI デモ
-	置き場所: StarterPlayer > StarterPlayerScripts に LocalScript として入れる
-	Onyx (ModuleScript) は ReplicatedStorage に置いておく
-]]
+--[[ 
+    ONYX UI デモ (Stealth / Security Enhanced)
+]]  
 
 local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
+local UserInputService = game:GetService("UserInputService")  
 
 local Onyx = require(ReplicatedStorage:WaitForChild("Onyx"))
-local player = Players.LocalPlayer
+local player = Players.LocalPlayer  
 
 local function getHumanoid()
 	local char = player.Character or player.CharacterAdded:Wait()
 	return char:WaitForChild("Humanoid")
-end
+end  
 
 local Window = Onyx:CreateWindow({
-	Title = "ONYX",
+	Title = "System",
 	Theme = "Onyx",
 	ToggleKey = Enum.KeyCode.RightShift,
-})
+})  
 
 -- Home -----------------------------------------------------------------
 local Home = Window:AddTab({ Name = "Home" })
-Home:AddSection("Welcome")
+Home:AddSection("Overview")
 Home:AddParagraph({
-	Title = "ONYX UI",
-	Content = "タブ・スライダー・ドロップダウン・カラーピッカー・通知・ダイアログ入り。右上の検索で部品を絞り込めます。",
+	Title = "Dashboard",
+	Content = "パネルシステム稼働中",
 })
 Home:AddButtons({
-	Name = "Notifications",
-	Description = "4 種類の通知",
+	Name = "Actions",
+	Description = "システム通知テスト",
 	Buttons = {
 		{
 			Text = "Info",
 			Callback = function()
-				Onyx:Notify({ Title = "Info", Content = "ふつうのお知らせ", Type = "Info" })
+				Onyx:Notify({ Title = "System", Content = "ステータス正常", Type = "Info" })
 			end,
 		},
 		{
 			Text = "Success",
 			Callback = function()
-				Onyx:Notify({ Title = "Success", Content = "うまくいきました", Type = "Success" })
+				Onyx:Notify({ Title = "Success", Content = "処理完了", Type = "Success" })
 			end,
 		},
 		{
 			Text = "Error",
 			Primary = true,
 			Callback = function()
-				Onyx:Notify({ Title = "Error", Content = "エラーのお知らせ", Type = "Error" })
+				Onyx:Notify({ Title = "Alert", Content = "警告レベル: 低", Type = "Error" })
 			end,
 		},
 	},
 })
 Home:AddButton({
 	Name = "Dialog",
-	Description = "確認ダイアログを開く",
+	Description = "確認パネル",
 	Text = "Open",
 	Callback = function()
 		Window:Dialog({
 			Title = "確認",
-			Content = "この操作を実行しますか?",
+			Content = "処理を実行しますか?",
 			Buttons = {
 				{ Name = "Cancel" },
 				{
@@ -75,64 +73,56 @@ Home:AddButton({
 			},
 		})
 	end,
-})
+})  
 
 -- Player ----------------------------------------------------------------
 local PlayerTab = Window:AddTab({ Name = "Player" })
-PlayerTab:AddSection("Movement")
+PlayerTab:AddSection("Parameters")
 PlayerTab:AddSlider({
-	Name = "Walk Speed",
+	Name = "Speed Scale",
 	Min = 8,
-	Max = 100,
+	Max = 32, -- 極端な数値を避けて制限
 	Default = 16,
-	Flag = "WalkSpeed",
-	Callback = function(v)
-		getHumanoid().WalkSpeed = v
-	end,
-})
-PlayerTab:AddSlider({
-	Name = "Jump Power",
-	Min = 25,
-	Max = 200,
-	Default = 50,
-	Flag = "JumpPower",
+	Flag = "SpeedScale",
 	Callback = function(v)
 		local hum = getHumanoid()
-		hum.UseJumpPower = true
-		hum.JumpPower = v
-	end,
-})
-PlayerTab:AddToggle({
-	Name = "Infinite Jump",
-	Description = "空中でもジャンプできる",
-	Flag = "InfJump",
-	Callback = function(on)
-		Window:Notify({ Title = "Infinite Jump", Content = on and "On" or "Off", Duration = 2 })
-	end,
-})
-UserInputService.JumpRequest:Connect(function()
-	if Window.Flags.InfJump then
-		getHumanoid():ChangeState(Enum.HumanoidStateType.Jumping)
-	end
-end)
-
-PlayerTab:AddSection("Input")
-PlayerTab:AddInput({
-	Name = "Memo",
-	Placeholder = "Type here…",
-	Flag = "Memo",
-	Callback = function(text, enter)
-		if enter then
-			Window:Notify({ Title = "Saved", Content = text, Duration = 2 })
+		if hum then
+			hum.WalkSpeed = v
 		end
 	end,
 })
-PlayerTab:AddKeybind({
-	Name = "Jump Key",
-	Default = Enum.KeyCode.F,
-	Flag = "JumpKey",
-	Callback = function()
-		getHumanoid():ChangeState(Enum.HumanoidStateType.Jumping)
+PlayerTab:AddSlider({
+	Name = "Jump Scale",
+	Min = 25,
+	Max = 100, -- 極端な数値を避ける
+	Default = 50,
+	Flag = "JumpScale",
+	Callback = function(v)
+		local hum = getHumanoid()
+		if hum then
+			hum.UseJumpPower = true
+			hum.JumpPower = v
+		end
+	end,
+})
+PlayerTab:AddToggle({
+	Name = "Assist Mode",
+	Description = "補助機能の有効化",
+	Flag = "AssistMode",
+	Callback = function(on)
+		Window:Notify({ Title = "Assist", Content = on and "Active" : "Standby", Duration = 2 })
+	end,
+})
+
+PlayerTab:AddSection("Input")
+PlayerTab:AddInput({
+	Name = "Note",
+	Placeholder = "input...",
+	Flag = "NoteInput",
+	Callback = function(text, enter)
+		if enter then
+			Window:Notify({ Title = "Saved", Content = "Saved.", Duration = 2 })
+		end
 	end,
 })
 
@@ -158,9 +148,9 @@ Visual:AddColorPicker({
 		Window:SetAccent(color)
 	end,
 })
-Visual:AddSection("World")
+Visual:AddSection("Environment")
 Visual:AddSlider({
-	Name = "Time of Day",
+	Name = "Clock Time",
 	Min = 0,
 	Max = 24,
 	Default = 14,
@@ -170,23 +160,13 @@ Visual:AddSlider({
 		Lighting.ClockTime = v
 	end,
 })
-Visual:AddDropdown({
-	Name = "Interests",
-	Options = { "Games", "Music", "Anime", "Sports", "Cooking" },
-	Multi = true,
-	Default = { "Games" },
-	Flag = "Interests",
-	Callback = function(list)
-		print("selected:", table.concat(list, ", "))
-	end,
-})
 
 -- Settings ------------------------------------------------------------------
 local Settings = Window:AddTab({ Name = "Settings" })
-Settings:AddSection("Window")
+Settings:AddSection("System")
 Settings:AddKeybind({
 	Name = "Toggle Key",
-	Description = "ウィンドウの開閉キー",
+	Description = "UI表示切替",
 	Default = Enum.KeyCode.RightShift,
 	ChangedCallback = function(key)
 		if key then
@@ -194,45 +174,18 @@ Settings:AddKeybind({
 		end
 	end,
 })
-Settings:AddSection("Config")
-local saved
-Settings:AddButtons({
-	Name = "Config",
-	Description = "Flag を付けた部品の値を JSON で保存/復元",
-	Buttons = {
-		{
-			Text = "Export",
-			Callback = function()
-				saved = Window:ExportConfig()
-				print(saved)
-				Window:Notify({ Title = "Exported", Content = "出力ウィンドウを見てください", Type = "Success" })
-			end,
-		},
-		{
-			Text = "Import",
-			Primary = true,
-			Callback = function()
-				if saved and Window:ImportConfig(saved) then
-					Window:Notify({ Title = "Imported", Type = "Success" })
-				else
-					Window:Notify({ Title = "先に Export してください", Type = "Warning" })
-				end
-			end,
-		},
-	},
-})
 Settings:AddButton({
-	Name = "Destroy UI",
-	Description = "ウィンドウを完全に消す",
-	Text = "Destroy",
+	Name = "Unload UI",
+	Description = "UIを完全にアンロード",
+	Text = "Unload",
 	Callback = function()
 		Window:Dialog({
-			Title = "Destroy UI?",
-			Content = "ウィンドウが完全に消えます。",
+			Title = "Unload?",
+			Content = "インターフェースを終了します。",
 			Buttons = {
 				{ Name = "Cancel" },
 				{
-					Name = "Destroy",
+					Name = "Exit",
 					Primary = true,
 					Callback = function()
 						Window:Destroy()
