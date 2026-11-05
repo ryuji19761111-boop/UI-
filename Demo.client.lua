@@ -110,7 +110,8 @@ PlayerTab:AddToggle({
 	Description = "補助機能の有効化",
 	Flag = "AssistMode",
 	Callback = function(on)
-		Window:Notify({ Title = "Assist", Content = on and "Active" : "Standby", Duration = 2 })
+		local statusText = on and "Active" or "Standby"
+		Window:Notify({ Title = "Assist", Content = statusText, Duration = 2 })
 	end,
 })
 
